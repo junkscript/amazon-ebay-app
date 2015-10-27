@@ -1,0 +1,11 @@
+{
+  "require": {
+    "exeu/apai-io": "dev-master"
+  },
+	"config": {
+		"preferred-install": "source"
+	},
+  "require": {
+    "silex/silex": "~1.1"
+  }
+}

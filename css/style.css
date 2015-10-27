@@ -1,0 +1,15 @@
+.product {
+	min-width: 122px; 
+	min-height: 170px; 
+	height: 275px; 
+	text-align: center;
+}
+.title {
+	height: 44px; 
+	overflow: hidden;
+	cursor: pointer;
+}
+.open {
+	background: url('../images/loading.gif') no-repeat right center;
+	background-size: 34px 34px;
+}
