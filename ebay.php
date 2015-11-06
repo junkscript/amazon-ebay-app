@@ -1,6 +1,20 @@
 <?php
-  require 'vendor/autoload.php';
+	//Formatted price symbol
+	function setSymbolFromCyrrencyId($currencyId = 'GBP') {
+		$currencyValues = ['AUD', 'CAD', 'CHF', 'CNY', 'EUR', 
+											 'GBP', 'HKD', 'INR', 'MYR', 'PHP', 
+											 'PLN', 'SEK', 'SGD', 'TWD', 'USD'];
+		$currencyValuesSymbols = ['$', '$', 'Fr', '¥', '€', 
+											 				'£', 'HK$', '&#8377;', 'RM', '₱', 
+											 				'zł', 'kr', '$', '$', '$'];
+		if (in_array($currencyId, $currencyValues)) {
+			return $currencyValuesSymbols[array_search($currencyId, $currencyValues)];
+		} else {
+			return '$';
+		}
+	}
 
+  require 'vendor/autoload.php'; 
   use \DTS\eBaySDK\Constants;
   use \DTS\eBaySDK\Finding\Services;
   use \DTS\eBaySDK\Finding\Types;
@@ -28,6 +42,7 @@
   $responsePages = $response->paginationOutput->totalPages;
   $currentPages = 20; // Total page: get 20. Maximum: 100 pages
   $totalEbayPages = min($currentPages, $responsePages);
+  $totalEbayResult = isset($response->paginationOutput->totalEntries) ? $response->paginationOutput->totalEntries : 0;
 
   $resultEbay = [];
 
@@ -41,10 +56,13 @@
     } else {
       foreach ($response->searchResult->item as $key => $item) {
         $resultEbay[$key]['title'] = $item->title;
-        $resultEbay[$key]['galleryURL'] = isset($item->galleryURL) ? $item->galleryURL : '../images/iconPlaceholder_96x96.gif';;
         $resultEbay[$key]['viewItemURL'] = $item->viewItemURL;
-        $resultEbay[$key]['sellingStatus']['currentPrice']['currencyId'] = $item->sellingStatus->currentPrice->currencyId;
-        $resultEbay[$key]['sellingStatus']['currentPrice']['value'] = number_format($item->sellingStatus->currentPrice->value, 2, '.', ',');  
+        $resultEbay[$key]['galleryURL'] = isset($item->galleryURL) ? $item->galleryURL : '../images/iconPlaceholder_96x96.gif';
+        $resultEbay[$key]['priceId'] = $item->sellingStatus->currentPrice->currencyId;
+        $resultEbay[$key]['currentPrice'] = $item->sellingStatus->currentPrice->value;  
+        $resultEbay[$key]['condition'] = strtolower(isset($item->condition->conditionDisplayName) ? $item->condition->conditionDisplayName : 'other');
+        $resultEbay[$key]['categoryName'] = isset($item->primaryCategory->categoryName) ? $item->primaryCategory->categoryName : 'none';
+        $resultEbay[$key]['shipping'] = isset($item->shippingInfo->shippingType) ? $item->shippingInfo->shippingType : 'free';
         $resultEbay[$key]['shopName'] = 'at eBay';
       }
     }
