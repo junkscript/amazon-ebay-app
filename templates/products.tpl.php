@@ -4,31 +4,24 @@
 <div id="remove-filters">
   <div class="form-group">
     <?php if (isset($_GET['store'])): ?>
-      <?php if ($_GET['store'] != 'all'): ?>
         <a class='remove-link btn btn-info' href='<?= $filter->removeFromUrl('store', '') ?>'>
         <?= 'Store: ' . strtoupper($_GET['store'][0]) . substr($_GET['store'], 1) ?>&nbsp;<span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a>
-      <?php endif; ?>
     <?php endif; ?>
-
     <?php if (isset($_GET['condition'])): ?>
-      <?php if ($_GET['condition'] != 'all'): ?>
         <a class='remove-link btn btn-info' href='<?= $filter->removeFromUrl('condition', '') ?>'>
         <?= 'Condition: ' . strtoupper($_GET['condition'][0]) . substr($_GET['condition'], 1) ?>&nbsp;<span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a>
-      <?php endif; ?>
     <?php endif; ?>
-
     <?php if(isset($_GET['brand'])): ?>
-      <?php if ($_GET['brand'] != 'all'): ?>
         <a class='remove-link btn btn-info' href='<?= $filter->removeFromUrl('brand', '') ?>'>
         <?= 'Brand: ' . strtoupper($_GET['brand'][0]) . substr($_GET['brand'], 1) ?>&nbsp;<span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a>
-      <?php endif; ?>
     <?php endif; ?>
-
     <?php if(isset($_GET['shipping'])): ?>
-      <?php if ($_GET['shipping'] != 'all'): ?>
         <a class='remove-link btn btn-info' href='<?= $filter->removeFromUrl('shipping', '') ?>'>
         <?= 'Shipping: ' . strtoupper($_GET['shipping'][0]) . substr($_GET['shipping'], 1) ?>&nbsp;<span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a>
-      <?php endif; ?>
+    <?php endif; ?>
+    <?php if(isset($_GET['pricing'])): ?>
+      <a class='remove-link btn btn-info' href='<?= $filter->removeFromUrl('pricing', '') ?>'>
+        <?= 'Pricing: ' . strtoupper($_GET['pricing'][0]) . substr($_GET['pricing'], 1) ?>&nbsp;<span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a>
     <?php endif; ?>
   </div>
 </div>

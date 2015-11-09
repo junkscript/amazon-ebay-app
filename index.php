@@ -28,29 +28,30 @@
 				</div>
 		</div>
 		<div class="container-fluid">
-			<?php 
+			<?php
 				$resultAll = [];
 				if (isset($_GET['search']) && !empty($_GET['search'])) {
 					$findSearch = str_replace(" ", "+", $_GET['search']);
 	      	require 'classes/filter.class.php';
-
 	      	$filter = new Filter();
 	      	$result = $filter->resultAll;
-	      	if (isset($_GET['store'])) {
-	      		$result = $filter->sortShop($result, $_GET['store']);
-	      	}
+
 	      	if (isset($_GET['min-price']) && isset($_GET['max-price'])) {
 	      		$result = $filter->sortPrice($result, (float)$_GET['min-price'], (float)$_GET['max-price']);
 	      	}
+					if (isset($_GET['store'])) {
+						$result = $filter->sortShop($result, $_GET['store']);
+					}
 	      	if (isset($_GET['condition'])) {
 	      		$result = $filter->sortCondition($result, $_GET['condition']);
 	      	}
 	      	if(isset($_GET['brand'])) {
 	      		$result = $filter->sortBrand($result, $_GET['brand']);
 	      	}
-	      	if (isset($_GET['shipping'])) {
-	      		$result = $filter->sortShipping($result, $_GET['shipping']);
-	      	}
+					if (isset($_GET['pricing'])) {
+						$result = $filter->sortPricing($result, $_GET['pricing']);
+					}
+
 	      	if(empty($filter->resultAll)) {
 	      		echo '<h1 class="text-center"><small>No search result!!!</small></h1>';
 	      	}
@@ -60,24 +61,22 @@
 		    <div class="row"> 
 		    	<!-- Filters -->
 					<?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
-			    	<div class="col-md-2 col-sm-3 col-xs-12">
+			    	<div class="col-md-2 col-sm-4 col-xs-12">
 			    		<!-- Top Sellers-->
 			      	<?php require 'templates/seller.tpl.php'; ?>
-			    		<form  action='' method="get" id="form-price-filter" >
-			    			<?php foreach ($_GET as $key => $value): ?>
-			    				<?php if ($key == 'search' || $key == 'store' || $key == 'page' || $key == 'shipping'): ?>
-					    			<input type="hidden" name="<?= $key; ?>" value="<?= isset($value) ? $value : ''; ?>">
-					    		<?php endif; ?>
-			    			<?php endforeach; ?>
+			    		<form  action='' method="get" id="form-price-filter" name="form_filter">
+
 				    		<?php if (isset($_GET['search'])): ?>
+									<input type="hidden" name="search" value="<?= $_GET['search'] ?>">
 				    			<input type="hidden" id="min" value="<?= $filter->getMinPrice($filter->resultAll) ?>">
 				    			<input type="hidden" id="max" value="<?= $filter->getMaxPrice($filter->resultAll) ?>">
 		    					<input type="hidden" id="cur-min" value="<?= isset($_GET['min-price']) ? $_GET['min-price'] : $filter->getMinPrice($filter->resultAll) ?>">
 				    			<input type="hidden" id="cur-max" value="<?= isset($_GET['max-price']) ? $_GET['max-price'] : $filter->getMaxPrice($filter->resultAll) ?>">
+									<?php if (isset($_GET['page'])): ?>
+										<input type="hidden" name="page" value="<?= $_GET['page'] ?>">
+									<?php endif; ?>
 				    		<?php endif; ?>
-				    		<div id="filters-remove">
-				    			
-				    		</div>
+
 			    			<div id="filters">
 				    			<!-- Price filter -->
 				    			<?php require 'templates/filters/price.filter.php'; ?>
@@ -87,13 +86,13 @@
 			    				<?php require 'templates/filters/condition.filter.php'; ?>
 				    			<!-- Brand filter -->
 				    			<?php require 'templates/filters/brand.filter.php'; ?>
-				    			<!-- Shipping filter -->
-				    			<?php require 'templates/filters/shipping.filter.php'; ?>
+									<!-- Pricing filter -->
+									<?php require 'templates/filters/pricing.filter.php'; ?>
 			    			</div>
 			    		</form>
 			    	</div>
 
-		    	<div class="col-md-10 col-sm-9 col-xs-12">
+		    	<div class="col-md-10 col-sm-8 col-xs-12">
 		    		<!-- Products -->
 			    	<?php require 'templates/products.tpl.php'; ?>
 			    </div>

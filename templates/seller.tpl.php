@@ -10,7 +10,7 @@
 			        <small><?= strlen($value['title']) > 50 ? substr($value['title'], 0, 50) . '...' : $value['title']; ?></small>
 			        <br/>
 			        <?php if (isset($value['currentPrice'])): ?>
-			        	<span style="color: #000000;"><?= setSymbolFromCyrrencyId($value['priceId']) . number_format($value['currentPrice'], 2, '.', ','); ?></span>
+			        	<span style="color: #000000;"><?= setSymbolFromCyrrencyId($value['priceId']) . number_format($value['currentPrice'] / 100, 2, '.', ','); ?></span>
 		        	<?php endif; ?>
 		        </div>
 		      </a>

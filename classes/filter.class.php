@@ -5,23 +5,23 @@
 	class Filter {
 		// Construct
 		function __construct() {
-			require_once $_SERVER['DOCUMENT_ROOT'] . '/ebay.php';
-			require_once $_SERVER['DOCUMENT_ROOT'] . '/amazon.php';
+			require $_SERVER['DOCUMENT_ROOT'] . '/includes/ebay.php';
+			require $_SERVER['DOCUMENT_ROOT'] . '/includes/amazon.php';
 			if (!empty($resultEbay) && !empty($resultAmazon)) {
   			$this->resultAll = array_merge($resultEbay, $resultAmazon);
-  			$this->store = array('all' => 'All', 'ebay' => 'eBay', 'amazon' => 'Amazon');
+  			$this->store = array('ebay' => 'eBay', 'amazon' => 'Amazon');
   			$this->ebayPages = $totalEbayPages;
   			$this->amazonPages = $totalAmazonPages;
   		}
   		if (empty($resultAmazon)) {
   			$this->resultAll = $resultEbay;
-  			$this->store = array('all' => 'All', 'ebay' => 'eBay');
+  			$this->store = array('ebay' => 'eBay');
   			$this->ebayPages = $totalEbayPages;
   			$this->amazonPages = 0;
   		}
   		if (empty($resultEbay)) {
   			$this->resultAll = $resultAmazon;
-  			$this->store = array('all' => 'All', 'amazon' => 'Amazon');
+  			$this->store = array('amazon' => 'Amazon');
   			$this->ebayPages = 0;
   			$this->amazonPages = $totalAmazonPages;
   		}
@@ -32,25 +32,21 @@
 		// Sort result by Shop
 		function sortShop($array, $store = 'all') {
 			$shop = '';
-			if ($store == 'all') {
-				return $array;
-			} else {
-				switch ($store) {
-					case 'ebay':
-						$shop = 'at eBay';
-					break;
-					case 'amazon':
-						$shop = 'at Amazon';
-					break;
-				}
-				$result = [];
-				foreach ($array as $key => $value) {
-					if ($value['shopName'] == $shop) {
-						$result[$key] = $value;
-					}
-				}
-				return $result;	
+			switch ($store) {
+				case 'ebay':
+					$shop = 'at eBay';
+				break;
+				case 'amazon':
+					$shop = 'at Amazon';
+				break;
 			}
+			$result = [];
+			foreach ($array as $key => $value) {
+				if ($value['shopName'] == $shop) {
+					$result[$key] = $value;
+				}
+			}
+			return $result;
 		}
 		function getMinPrice($array) {
 			$min = (!empty($array)) ? $array[0]['currentPrice'] : 0;
@@ -80,45 +76,24 @@
 			}
 			return $result;
 		}
-		//Function to build url
-		function buildUrl($itemName = '', $value) {
-			$query = explode('?', $_SERVER['REQUEST_URI']); 
-			parse_str($query[1], $data); 
-			$data[$itemName] = $value; 
-
-			return $query[0] . '?' . http_build_query($data); // rebuild URL
-		}
-		function removeFromUrl($itemName = '', $value) {
-			$query = explode('?', $_SERVER['REQUEST_URI']); 
-			parse_str($query[1], $data); 
-			unset($data[$itemName]);
-			//$data[$itemName] = $value; 
-
-			return $query[0] . '?' . http_build_query($data); // rebuild URL
-		}
 		//Return all conditions
-		function getCondition() {
+		function getCondition($array) {
 			$conditions = [];
-			foreach ($this->resultAll as $key => $value) {
+			foreach ($array as $key => $value) {
 				if (isset($value['condition'])) {
 					$conditions[$value['condition']] = strtoupper(substr($value['condition'], 0, 1)) . substr($value['condition'], 1);
 				}
 			}
-			$conditions['all'] = 'All';
-			ksort($conditions);
+			if (!empty($conditions)) ksort($conditions);
 			return $conditions;
 		}
 		//Sort result by condition
-		function sortCondition($array, $condition = 'all') {
+		function sortCondition($array, $condition = '') {
 			$result = [];
-			if ($condition == 'all') {
-				return $array;
-			} else {
-				foreach ($array as $key => $value) {
-					if (isset($value['condition'])) {
-						if ($value['condition'] == $condition) {
-							$result[$key] = $value;
-						}
+			foreach ($array as $key => $value) {
+				if (isset($value['condition'])) {
+					if ($value['condition'] == $condition) {
+						$result[$key] = $value;
 					}
 				}
 			}
@@ -133,45 +108,41 @@
 				}
 			}
 			if (!empty($brands)) ksort($brands);
-			return array_merge(array('all' => 'All'), $brands);
+			return array_merge($brands);
 		}
 		//Sort result by brand
-		function sortBrand($array, $brand = 'all') {
+		function sortBrand($array, $brand = '') {
 			$result = [];
-			if ($brand == 'all') {
-				return $array;
-			} else {
-				foreach ($array as $key => $value) {
-					if (isset($value['brand'])) {
-						if (strtolower($value['brand']) == $brand) {
-							$result[$key] = $value;
-						}
-					} else {
+			foreach ($array as $key => $value) {
+				if (isset($value['brand'])) {
+					if (strtolower($value['brand']) == $brand) {
+						$result[$key] = $value;
 					}
+				} else {
 				}
 			}
 			return $result;
 		}
-		//Get all shipping
-		function getShipping($array) {
-			$shipping = [];
+		//Get pricing
+		function getPricing($array) {
+			$pricing = [];
 			foreach ($array as $key => $value) {
-				if (isset($value['shipping'])) {
-					$shipping[strtolower($value['shipping'])] = strtoupper(substr($value['shipping'], 0, 1)) . substr($value['shipping'], 1);
+				if (isset($value['pricing'])) {
+					$pricing[strtolower($value['pricing'])] = $value['pricing'];
 				}
 			}
-			if (!empty($shipping)) ksort($shipping);
-			return array_merge(array('all' => 'All'), $shipping);
+			if (!empty($pricing)) ksort($pricing);
+			return $pricing;
 		}
-		//Sort result by shipping
-		function sortShipping($array, $shipping = 'all') {
+		//Sort result by pricing
+		function sortPricing($array, $pricing = 'all') {
 			$result = [];
-			if ($shipping == 'all') {
+			if ($pricing == 'all') {
 				return $array;
 			} else {
 				foreach ($array as $key => $value) {
-					if (isset($value['shipping'])) {
-						if (strtolower($value['shipping']) == $shipping) {
+					if (isset($value['pricing'])) {
+						if (strtolower($value['pricing']) == $pricing) {
 							$result[$key] = $value;
 						}
 					} else {
@@ -183,6 +154,26 @@
 		//Debugging
 		function debug($var) {
 			echo '<pre>'; print_r($var); echo '</pre>';
+		}
+		//Add $_GET['paramentr] to url and replace it if exist
+		function buildUrl($itemName = '', $value) {
+			$query = explode('?', $_SERVER['REQUEST_URI']);
+			parse_str($query[1], $data);
+			$data[$itemName] = $value;
+			return $query[0] . '?' . http_build_query($data); // rebuild URL
+		}
+		function getUrlParamterValue($url, $itemName) {
+			$query = explode('?', $url);
+			parse_str($query[1], $data);
+			return $data[$itemName]; // rebuild URL
+		}
+		//Remove $_GET['paramentr] from url
+		function removeFromUrl($itemName = '', $value) {
+			$query = explode('?', $_SERVER['REQUEST_URI']);
+			parse_str($query[1], $data);
+			unset($data[$itemName]);
+			//$data[$itemName] = $value;
+			return $query[0] . '?' . http_build_query($data); // rebuild URL
 		}
 
 	}

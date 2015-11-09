@@ -1,5 +1,6 @@
 <?php
-  require __DIR__ . '/vendor/autoload.php';
+  require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
   use ApaiIO\ApaiIO;
   use ApaiIO\Configuration\GenericConfiguration;
   use ApaiIO\Operations\Search;
@@ -124,6 +125,8 @@
           $resultAmazon[$itemKey]['shipping'] = 'free';
           //Shop name
           $resultAmazon[$itemKey]['shopName'] = 'at Amazon';
+          //Shipping
+          $resultAmazon[$itemKey]['pricing'] = 'Buy Now';
         }
       }
 
@@ -178,7 +181,7 @@
 
   function getNodeId($response) {
     $resultAmazonBrowseNodes = [];
-    if (isset($result->Items->Request->Errors->Error->Message)) {
+    if (isset($response->Items->Request->Errors->Error->Message)) {
       return;
     } else {
       foreach ($response->Items->Item as $key => $value) {
@@ -193,7 +196,7 @@
         }
       }
     }
-    return $resultAmazonBrowseNodes[0]['nodeId'];
+    return $resultAmazonBrowseNodes[rand(0, count($resultAmazonBrowseNodes) - 1)]['nodeId'];
   }
 
   function getSellerDetails($asin = '', $lookup, $apaiIO, $conf) {

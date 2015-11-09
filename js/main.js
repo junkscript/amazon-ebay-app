@@ -10,7 +10,7 @@ $(function() {
             return {
               value: item
             };
-         }
+          }
         }));
       })
     },
@@ -33,14 +33,13 @@ $(function() {
     max: parseInt($('#max').val()),
     values: [parseInt($('#cur-min').val()), parseInt($('#cur-max').val())],
     slide: function( event, ui ) {
-      //$( "#amount" ).val( "$" + ui.values[0] + " - $" + ui.values[1] );
       $('#min-price').val(ui.values[0]);
       $('#max-price').val(ui.values[1]);
     }
   });
   //Accordion
-  $('#filters').accordion();
+  /*$('#filters').accordion();
   $('#filters').accordion("option", "icons", {
     'header': 'glyphicon glyphicon-chevron-down', 'activeHeader': 'glyphicon glyphicon-chevron-up'
-  });
+  });*/
 });

@@ -64,6 +64,13 @@
         $resultEbay[$key]['categoryName'] = isset($item->primaryCategory->categoryName) ? $item->primaryCategory->categoryName : 'none';
         $resultEbay[$key]['shipping'] = isset($item->shippingInfo->shippingType) ? $item->shippingInfo->shippingType : 'free';
         $resultEbay[$key]['shopName'] = 'at eBay';
+        if (isset($item->listingInfo->listingType)) {
+          if ($item->listingInfo->listingType == 'Auction') {
+            $resultEbay[$key]['pricing'] = $item->listingInfo->listingType;
+          } else {
+            $resultEbay[$key]['pricing'] = 'Buy Now';
+          }
+        }
       }
     }
   }
